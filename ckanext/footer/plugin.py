@@ -111,6 +111,36 @@ DATASET_NAME = 'site-monthly-counts'
 RESOURCE_NAME = 'monthly_counts'
 OWNER_ORG =  'ckanext.monthlycounts.owner_org' # can be overridden via ini
 
+def monthlycounts_list(context, data_dict):
+    """
+    CKAN Action:
+    /api/3/action/monthlycounts_list
+
+    Returns the monthly counts from the Datastore resource as JSON.
+    Accepts optional 'limit' and 'sort' in data_dict.
+    """
+    # Authorization: reuse 'sysadmin-only' semantics, or define your own
+    # toolkit.check_access('sysadmin', context, data_dict)
+
+    # Get resource id (from the same controller you already use)
+    res_id = MonthlyCountController._get_or_bootstrap_resource(context)
+
+    limit = int(data_dict.get('limit', 10000))
+    sort = data_dict.get('sort', 'snapshot_date desc, org_name asc')
+
+    search_result = toolkit.get_action('datastore_search')(context, {
+        'resource_id': res_id,
+        'limit': limit,
+        'sort': sort,
+    })
+
+    # Shape the response like other CKAN actions
+    return {
+        'resource_id': res_id,
+        'total': search_result.get('total', 0),
+        'records': search_result.get('records', []),
+    }
+
 
 class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
     """Adds /ckan-admin/monthly-counts (admin-only) and snapshot helpers."""
@@ -118,6 +148,7 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.IClick)
+    plugins.implements(plugins.IActions)  # <-- add this
 
     def update_config(self, config):
         toolkit.add_template_directory(config, 'templates')
@@ -134,6 +165,11 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
         MonthlyCountController.RESOURCE_NAME = RESOURCE_NAME
         MonthlyCountController.OWNER_ORG = OWNER_ORG
 
+    def get_actions(self):
+        # expose one action: monthlycounts_list
+        return {
+            'monthlycounts_list': monthlycounts_list
+        }
     # --- Admin page blueprint ---
     def get_blueprint(self):
         bp = Blueprint('monthly_counts_admin', __name__)
