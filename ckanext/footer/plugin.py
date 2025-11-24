@@ -204,7 +204,7 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
 
         #return bp
 
-        @bp.route('/ckan-admin/monthly-counts/data', methods=['GET'])
+        @bp.route('/monthly-counts/data', methods=['GET'])
         def monthly_counts_data():
             # CKAN context with real permissions
             context = {
