@@ -6,12 +6,11 @@ from ckanext.related_resources.models.related_resources import RelatedResources 
 from ckanext.footer.controller.monthlycount import MonthlyCountController #DATASET_NAME, RESOURCE_NAME, OWNER_ORG
 import ckan.logic as logic
 import click
-from flask import Blueprint, render_template, session, has_request_context,redirect, url_for
+from flask import Blueprint, render_template, session, has_request_context,redirect, url_for, jsonify
 import asyncio
 from ckanext.footer.controller.display_mol_image import FooterController
 from ckan.common import request
 import logging
-import json
 from typing import Any, Dict
 
 log = logging.getLogger(__name__)
@@ -204,7 +203,34 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
 
             return toolkit.render('admin/monthly_counts.html', extra_vars={'rows': rows})
 
+        #return bp
+
+        @bp.route('/ckan-admin/monthly-counts/data', methods=['GET'])
+        def monthly_counts_data():
+            # CKAN context with real permissions
+            context = {
+                'user': toolkit.c.user,
+                'auth_user_obj': toolkit.c.userobj,
+                'ignore_auth': False,  # <--- use CKAN auth
+            }
+
+            # Require sysadmin (you can relax if needed)
+            if not MonthlyCountController._is_sysadmin():
+                return jsonify({"error": "Not authorized"}), 403
+
+            # Fetch the datastore resource
+            res_id = MonthlyCountController._get_or_bootstrap_resource(context)
+
+            result = toolkit.get_action('datastore_search')(context, {
+                'resource_id': res_id,
+                'limit': 10000,
+                'sort': 'snapshot_date desc, org_name asc'
+            })
+
+            return jsonify(result)
+
         return bp
+
 
     # --- CLI (ckan monthlycounts snapshot) ---
     def get_commands(self):
