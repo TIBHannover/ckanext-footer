@@ -128,8 +128,6 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
         DATASET_NAME = config.get('ckanext.monthlycounts.dataset_name', DATASET_NAME)
         RESOURCE_NAME = config.get('ckanext.monthlycounts.resource_name', RESOURCE_NAME)
         OWNER_ORG = config.get('ckanext.monthlycounts.owner_org', OWNER_ORG)
-        log.debug('configure: DATASET_NAME=%s RESOURCE_NAME=%s OWNER_ORG=%s',
-                  DATASET_NAME, RESOURCE_NAME, OWNER_ORG)
 
         # push settings to controller globals
         MonthlyCountController.DATASET_NAME = DATASET_NAME
