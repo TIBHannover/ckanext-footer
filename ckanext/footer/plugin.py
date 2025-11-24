@@ -120,6 +120,7 @@ def monthlycounts_list(context, data_dict):
     """
     # Authorization: reuse 'sysadmin-only' semantics, or define your own
     # toolkit.check_access('sysadmin', context, data_dict)
+    context['ignore_auth'] = True
 
     # Get resource id (from the same controller you already use)
     res_id = MonthlyCountController._get_or_bootstrap_resource(context)
