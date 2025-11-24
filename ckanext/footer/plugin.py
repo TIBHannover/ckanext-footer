@@ -176,8 +176,9 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
         @bp.route('/ckan-admin/monthly-counts', methods=['GET', 'POST'])
         def monthly_counts_admin():
             context = {
-                'ignore_auth': True,
-                'user': toolkit.c.user or 'visitor',  # user is mostly irrelevant if ignore_auth=True
+                'user': toolkit.c.user,
+                'auth_user_obj': toolkit.c.userobj,
+                'ignore_auth': False,
             }
             log.debug('monthly_counts_admin: context user=%s ignore_auth=%s',
                       context.get('user'), context.get('ignore_auth'))
@@ -208,9 +209,8 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
         def monthly_counts_data():
             # CKAN context with real permissions
             context = {
-                'user': toolkit.c.user,
-                'auth_user_obj': toolkit.c.userobj,
-                'ignore_auth': True,  # <--- use CKAN auth
+                'ignore_auth': True,
+                'user': toolkit.c.user or 'visitor',  # user is mostly irrelevant if ignore_auth=True
             }
 
             # Require sysadmin (you can relax if needed)
