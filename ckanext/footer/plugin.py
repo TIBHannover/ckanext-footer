@@ -211,7 +211,7 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
             context = {
                 'user': toolkit.c.user,
                 'auth_user_obj': toolkit.c.userobj,
-                'ignore_auth': False,  # <--- use CKAN auth
+                'ignore_auth': True,  # <--- use CKAN auth
             }
 
             # Require sysadmin (you can relax if needed)
