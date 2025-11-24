@@ -215,8 +215,8 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
             }
 
             # Require sysadmin (you can relax if needed)
-            if not MonthlyCountController._is_sysadmin():
-                return jsonify({"error": "Not authorized"}), 403
+            # if not MonthlyCountController._is_sysadmin():
+            #     return jsonify({"error": "Not authorized"}), 403
 
             # Fetch the datastore resource
             res_id = MonthlyCountController._get_or_bootstrap_resource(context)
