@@ -11,6 +11,7 @@ import asyncio
 from ckanext.footer.controller.display_mol_image import FooterController
 from ckan.common import request
 import logging
+import json
 from typing import Any, Dict
 
 log = logging.getLogger(__name__)
@@ -208,7 +209,6 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
 
         @bp.route('/monthly-counts/data', methods=['GET'])
         def monthly_counts_data():
-            # CKAN context with real permissions
             context = {
                 'ignore_auth': True,
                 'user': toolkit.c.user or 'visitor',  # user is mostly irrelevant if ignore_auth=True
@@ -227,7 +227,31 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
                 'sort': 'snapshot_date desc, org_name asc'
             })
 
-            return jsonify(result)
+            records = result['records']
+            # first_data = records[0]
+            #data_json = records.as_dict()
+            results = {}
+
+            for entry in records:
+                name = entry["org_name"]
+                count = entry["dataset_count"]
+
+                # Normal cases
+                if name not in ("__TOTAL__Datasets", "Total Molecules"):
+                    # Make key like: ICSD_dataset_count
+                    key = f"{name.replace(' ', '_')}_dataset_count"
+                    results[key] = count
+
+                # Special cases
+                if name == "__TOTAL__Datasets":
+                    results["Total_datasets"] = count
+
+                if name == "Total Molecules":
+                    results["Total_Molecules"] = count
+
+            log.debug(f"Result that wee need {results}")
+
+            return jsonify(results)
 
         return bp
 
