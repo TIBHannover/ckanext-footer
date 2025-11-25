@@ -238,14 +238,13 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
             for entry in latest_records:
                 name = entry["org_name"]
                 count = entry["dataset_count"]
-                results['Snapshot Date'] = latest_date
+                # results['Snapshot Date'] = latest_date
 
                 # Normal cases
                 if name not in ("__TOTAL__Datasets", "Total Molecules"):
                     # Make key like: ICSD_dataset_count
                     key = f"{name.replace(' ', '_')}_dataset_count"
                     results[key] = count
-
 
                 # Special cases
                 if name == "__TOTAL__Datasets":
