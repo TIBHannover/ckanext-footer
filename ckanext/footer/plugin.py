@@ -8,6 +8,7 @@ import ckan.logic as logic
 import click
 from flask import Blueprint, render_template, session, has_request_context,redirect, url_for, jsonify
 import asyncio
+from collections import defaultdict
 from ckanext.footer.controller.display_mol_image import FooterController
 from ckan.common import request
 import logging
@@ -214,10 +215,6 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
                 'user': toolkit.c.user or 'visitor',  # user is mostly irrelevant if ignore_auth=True
             }
 
-            # Require sysadmin (you can relax if needed)
-            # if not MonthlyCountController._is_sysadmin():
-            #     return jsonify({"error": "Not authorized"}), 403
-
             # Fetch the datastore resource
             res_id = MonthlyCountController._get_or_bootstrap_resource(context)
 
@@ -227,20 +224,28 @@ class MonthlyCountsAdminPlugin(plugins.SingletonPlugin):
                 'sort': 'snapshot_date desc, org_name asc'
             })
 
+            # Only sends the latest date nformation based on the
             records = result['records']
-            # first_data = records[0]
-            #data_json = records.as_dict()
+            by_date = defaultdict(list)
+            for row in records:
+                by_date[row['snapshot_date']].append(row)
+
+            latest_date = max(by_date.keys())
+            latest_records = by_date[latest_date]
+
             results = {}
 
-            for entry in records:
+            for entry in latest_records:
                 name = entry["org_name"]
                 count = entry["dataset_count"]
+                results['Snapshot Date'] = latest_date
 
                 # Normal cases
                 if name not in ("__TOTAL__Datasets", "Total Molecules"):
                     # Make key like: ICSD_dataset_count
                     key = f"{name.replace(' ', '_')}_dataset_count"
                     results[key] = count
+
 
                 # Special cases
                 if name == "__TOTAL__Datasets":
