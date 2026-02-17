@@ -31,7 +31,7 @@ class FooterController(plugins.SingletonPlugin):
     plugins.implements(plugins.IPackageController, inherit=True)
 
     @staticmethod
-    def display_search_mol_image(package_inchiKey, page):
+    def display_search_mol_image(package_inchiKey=None, page=0):
         """
         Function to generate image in bytes code, which is later converted to an image, using the packageID
         Similar to the RDKit Visuals extension!!
@@ -40,6 +40,8 @@ class FooterController(plugins.SingletonPlugin):
         :param page: page number we are in(starting from 0)
         :return: Either returns image in the format of bytecode or NONE
         """
+        if not package_inchiKey:
+            return None
 
         inchi_key = package_inchiKey
 
@@ -64,7 +66,7 @@ class FooterController(plugins.SingletonPlugin):
                 return 0
 
         except Exception as e:
-            log.debug(f"Error in display_search_mol_image {e}")
+            log.error(f"Error in display_search_mol_image {e}")
 
     def get_molecule_data(package_id):
         """
