@@ -46,12 +46,6 @@ class FooterPlugin(plugins.SingletonPlugin):
         )
 
         blueprint.add_url_rule(
-                        '/moleculesearch',
-                        'molecule_view_self',
-                        FooterController.search_molecule,
-                        methods=['GET', 'POST'] )
-
-        blueprint.add_url_rule(
             u'/dataset',
             u'display_mol_image',
             FooterController.display_search_mol_image,

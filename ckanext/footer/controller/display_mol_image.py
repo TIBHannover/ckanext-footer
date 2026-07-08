@@ -430,13 +430,13 @@ class FooterController(plugins.SingletonPlugin):
                 query = query.join(
                     mol_relation_data, molecules_tab.id == mol_relation_data.molecules_id
                 ).filter(
-                    molecules_tab.smiles.ilike(f"%{q_smiles}%")
+                    molecules_tab.canonical_smiles.ilike(f"%{q_smiles}%")
                 )
 
                 # Fetch the necessary fields: package_id from mol_relation_data and smiles from molecules_tab
                 query = query.with_entities(
                     mol_relation_data.package_id,
-                    molecules_tab.smiles
+                    molecules_tab.canonical_smiles
                 )
 
                 dataset_ids = query.all()
