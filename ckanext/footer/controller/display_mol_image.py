@@ -73,7 +73,7 @@ class FooterController(plugins.SingletonPlugin):
         generates molecular data, that is displayed besides the molecule image, for the particular molecule
 
         :param package_id: receives package id from
-        :return: molecule formal, exact mass and inchi are returned to display beside the image
+        :return: molecule formula, exact mass and inchi are returned to display beside the image
         """
 
         mol_formula = []

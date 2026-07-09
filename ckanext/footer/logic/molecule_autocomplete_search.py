@@ -1,4 +1,3 @@
-# your_plugin_name/action/molecule_autocomplete_search.py
 """
 Provides up to 10 autocomplete suggestions based on the user's input.
 """
